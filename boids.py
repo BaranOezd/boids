@@ -101,15 +101,15 @@ class Boid:
         # --- Parameters ---
         max_speed = 3.2
         min_speed = 1.2
-        max_force = 0.045  # slightly higher for higher weights
+        max_force = 0.04  
         sep_dist = 22
-        ali_dist = 70      # 0.7 of coh_dist
-        coh_dist = 100
+        ali_dist = 60      # alignment radius 
+        coh_dist = 110     # cohesion radius 
         sep_dist2 = sep_dist * sep_dist
         ali_dist2 = ali_dist * ali_dist
         coh_dist2 = coh_dist * coh_dist
         min_dist2 = 8 * 8
-        ali_fov_angle = 200  # alignment FOV
+        ali_fov_angle = 215  # alignment FOV (200 to 230)
         ali_fov_cos = math.cos(math.radians(ali_fov_angle / 2))
 
         # --- Neighbor search ---
@@ -140,7 +140,7 @@ class Boid:
         ali_x = ali_y = ali_n = 0
         coh_x = coh_y = coh_n = 0
 
-        # --- Precompute heading for dot product FOV ---
+        # --- Precompute heading for dot product FOV (alignment only) ---
         vmag = math.hypot(self.vx, self.vy)
         if vmag > 1e-8:
             vx_norm = self.vx / vmag
@@ -163,12 +163,12 @@ class Boid:
                     sep_x -= dx_ * inv_dist
                     sep_y -= dy_ * inv_dist
                     sep_n += 1
-            # Alignment: FOV or very close
+            # Alignment: FOV or very close, within ali_dist
             if dist2 < ali_dist2 and (ali_in_fov or dist2 < min_dist2):
                 ali_x += other.vx
                 ali_y += other.vy
                 ali_n += 1
-            # Cohesion: ignore FOV, just distance
+            # Cohesion: ignore FOV, just distance, within coh_dist
             if dist2 < coh_dist2:
                 coh_x += self.x + dx_
                 coh_y += self.y + dy_
